@@ -53,35 +53,38 @@ def save_user_reviews(file_name,URL,product_name):
 	f = open(file_name,'a')
 
 	while(current_page_count<review_iterations):
-		# Extract the reviews list section in the page
-		review_list = tree.xpath('//div[@class="review-list"]')[0]
+		try:
+			# Extract the reviews list section in the page
+			review_list = tree.xpath('//div[@class="review-list"]')[0]
 
-		# Extract the review rating given by the user
-		review_rating = review_list.xpath('//div[@class="fk-stars"]/@title')
-		# Extract the date when the review was given
-		review_dates = review_list.xpath('//div[@class="date line fk-font-small"]/text()')
-		# Extract the title given for the review by the user
-		review_titles = review_list.xpath('//div[@class="line fk-font-normal bmargin5 dark-gray"]/strong/text()')
-		# Extract the review text content
-		review_text = review_list.xpath('//span[@class="review-text"]/text()')
+			# Extract the review rating given by the user
+			review_rating = review_list.xpath('//div[@class="fk-stars"]/@title')
+			# Extract the date when the review was given
+			review_dates = review_list.xpath('//div[@class="date line fk-font-small"]/text()')
+			# Extract the title given for the review by the user
+			review_titles = review_list.xpath('//div[@class="line fk-font-normal bmargin5 dark-gray"]/strong/text()')
+			# Extract the review text content
+			review_text = review_list.xpath('//span[@class="review-text"]/text()')
 
-		for i in range(10):
-			# Build the file entry for each user review
-			out_string = "%s|%s|%s|%s|%s" % (product_name,review_dates[i],review_rating[i][0],review_titles[i],review_text[i])
-			out_string = out_string.replace('\n','')
-			out_string = out_string.replace('\t','')
-			# Write the user review into the cev file
-			f.write(out_string)
-			f.write('\n')
+			for i in range(10):
+				# Build the file entry for each user review
+				out_string = "%s|%s|%s|%s|%s" % (product_name,review_dates[i],review_rating[i][0],review_titles[i],review_text[i])
+				out_string = out_string.replace('\n','')
+				out_string = out_string.replace('\t','')
+				# Write the user review into the cev file
+				f.write(out_string)
+				f.write('\n')
 
-		# Increment the page count value by 10
-		current_page_count += 1
-		print(current_page_count)
-		# Reform the page URL to get the next 10 user reviews
-		PAGE_URL = URL + str(current_page_count*10)
-		# Parse the page source to the tree representation
-		tree = get_page_tree(PAGE_URL) 
-
+			# Increment the page count value by 10
+			current_page_count += 1
+			print(current_page_count)
+			# Reform the page URL to get the next 10 user reviews
+			PAGE_URL = URL + str(current_page_count*10)
+			# Parse the page source to the tree representation
+			tree = get_page_tree(PAGE_URL) 
+		except	IndexError:
+			print("URL = "+PAGE_URL)
+			break
 
 	f.close()
 
